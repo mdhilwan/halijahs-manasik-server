@@ -8,7 +8,7 @@ app.use(express.json());
 let broadcastStatus = false;
 
 // Health check
-app.get('/health-check', (req, res) => {
+app.get('/health', (req, res) => {
     res.json({ message: { ok: true } });
 });
 
