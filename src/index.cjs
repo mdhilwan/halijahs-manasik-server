@@ -71,6 +71,8 @@ app.get("/otp/code", (req, res) => {
 app.post("/login", (req, res) => {
     const { otp } = req.body;
 
+    console.log('/login', `Received "${otp}", expects "${currentOtp}"`)
+
     if (!currentOtp) {
         return res.status(400).json({ success: false, error: "No OTP generated" });
     }
