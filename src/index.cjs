@@ -133,7 +133,6 @@ app.post("/broadcast/audio", (req, res) => {
         }
 
         latestAudioChunk = data; // store latest chunk only
-        console.log(latestAudioChunk)
         latestAudioChunkId += 1;
 
         res.json({ success: true, chunkId: latestAudioChunkId });
