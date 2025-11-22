@@ -79,6 +79,7 @@ app.post("/login", (req, res) => {
 
     if (otp === currentOtp) {
         isLoggedIn = true;
+        broadcasting = 'idle';
         currentOtp = null;
         res.json({ success: true });
     } else {
