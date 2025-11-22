@@ -121,19 +121,19 @@ app.post("/broadcast/stop", (req, res) => {
    POST AUDIO CHUNK (USTAZ)
 -------------------------*/
 app.post("/broadcast/audio", (req, res) => {
-    console.log('POST /broadcast/audio', req.body)
     try {
         if (!isLoggedIn || !broadcasting) {
             return res.status(400).json({ success: false, error: "Broadcast inactive" });
         }
 
-        const { chunk } = req.body; // expect base64 string
+        const { data } = req.body; // expect base64 string
 
-        if (!chunk) {
+        if (!data) {
             return res.status(400).json({ success: false, error: "Missing chunk" });
         }
 
-        latestAudioChunk = chunk; // store latest chunk only
+        latestAudioChunk = data; // store latest chunk only
+        console.log(latestAudioChunk)
         latestAudioChunkId += 1;
 
         res.json({ success: true, chunkId: latestAudioChunkId });
