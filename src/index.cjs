@@ -111,9 +111,9 @@ app.post("/broadcast/stop", (req, res) => {
         return res.status(401).json({ success: false, error: "Not logged in" });
     }
 
-    broadcasting = false;
+    broadcasting = 'idle';
     latestAudioChunk = null; // clear
-    res.json({ broadcasting: false });
+    res.json({ broadcasting: 'idle' });
 });
 
 /* ------------------------
