@@ -100,7 +100,7 @@ app.post("/broadcast/start", (req, res) => {
         return res.status(401).json({ success: false, error: "Not logged in" });
     }
 
-    broadcasting = true;
+    broadcasting = 'live';
     latestAudioChunk = null; // reset
     res.json({ broadcasting: true });
 });
