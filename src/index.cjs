@@ -121,7 +121,7 @@ app.post("/broadcast/stop", (req, res) => {
    POST AUDIO CHUNK (USTAZ)
 -------------------------*/
 app.post("/broadcast/audio", (req, res) => {
-    console.log('POST /broadcast/audio')
+    console.log('POST /broadcast/audio', req.body)
     try {
         if (!isLoggedIn || !broadcasting) {
             return res.status(400).json({ success: false, error: "Broadcast inactive" });
