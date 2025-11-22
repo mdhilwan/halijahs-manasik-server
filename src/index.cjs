@@ -12,6 +12,7 @@ let broadcasting = false;
 
 // Store latest audio chunk
 let latestAudioChunk = null;
+let latestAudioChunkId = 0;
 
 // Health endpoint
 app.get("/health", (req, res) => {
@@ -120,29 +121,41 @@ app.post("/broadcast/stop", (req, res) => {
    POST AUDIO CHUNK (USTAZ)
 -------------------------*/
 app.post("/broadcast/audio", (req, res) => {
-    if (!isLoggedIn || !broadcasting) {
-        return res.status(400).json({ success: false, error: "Broadcast inactive" });
+    try {
+        if (!isLoggedIn || !broadcasting) {
+            return res.status(400).json({ success: false, error: "Broadcast inactive" });
+        }
+
+        const { chunk } = req.body; // expect base64 string
+
+        if (!chunk) {
+            return res.status(400).json({ success: false, error: "Missing chunk" });
+        }
+
+        latestAudioChunk = chunk; // store latest chunk only
+        latestAudioChunkId += 1;
+
+        res.json({ success: true, chunkId: latestAudioChunkId });
+    } catch (err) {
+        console.error('POST /broadcast/audio error', err);
+        res.status(500).json({ success: false, error: 'server error' });
     }
-
-    const { chunk } = req.body; // expect base64 string
-
-    if (!chunk) {
-        return res.status(400).json({ success: false, error: "Missing chunk" });
-    }
-
-    latestAudioChunk = chunk; // store latest chunk only
-    res.json({ success: true });
 });
 
 /* ------------------------
    GET AUDIO CHUNK (JEMAAH)
 -------------------------*/
 app.get("/broadcast/audio", (req, res) => {
-    if (!broadcasting || !latestAudioChunk) {
-        return res.json({ chunk: null });
-    }
+    try {
+        if (!broadcasting || !latestAudioChunk) {
+            return res.json({ chunkId: 0, data: null });
+        }
 
-    res.json({ chunk: latestAudioChunk });
+        res.json({ chunkId: latestAudioChunkId, data: latestAudioChunk });
+    } catch (e) {
+        console.error('GET /broadcast/audio error', err);
+        res.status(500).json({ success: false, error: 'server error' });
+    }
 });
 
 app.listen(4321, () => {
