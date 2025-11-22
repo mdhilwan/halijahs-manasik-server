@@ -86,6 +86,13 @@ app.post("/login", (req, res) => {
     }
 });
 
+/* ------------------------
+   GET BROADCAST STATUS
+-------------------------*/
+app.get("/broadcast/current", (req, res) => {
+    res.json({ broadcasting });
+});
+
 // Start broadcast
 app.post("/broadcast/start", (req, res) => {
     if (!isLoggedIn) {
