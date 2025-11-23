@@ -135,6 +135,8 @@ app.post("/broadcast/audio", (req, res) => {
         latestAudioChunk = data; // store latest chunk only
         latestAudioChunkId += 1;
 
+        console.log({latestAudioChunkId})
+
         res.json({ success: true, chunkId: latestAudioChunkId });
     } catch (err) {
         console.error('POST /broadcast/audio error', err);
