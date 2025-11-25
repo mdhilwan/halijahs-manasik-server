@@ -102,6 +102,7 @@ app.post("/broadcast/start", (req, res) => {
     }
 
     broadcasting = 'live';
+    pushSseEvent("status", { broadcasting: "live" });
     latestAudioChunk = null; // reset
     res.json({ broadcasting: true });
 });
@@ -113,6 +114,7 @@ app.post("/broadcast/stop", (req, res) => {
     }
 
     broadcasting = 'idle';
+    pushSseEvent("status", { broadcasting: "idle" });
     latestAudioChunk = null; // clear
     res.json({ broadcasting: 'idle' });
 });
@@ -134,6 +136,7 @@ app.post("/broadcast/audio", (req, res) => {
 
         latestAudioChunk = data; // store latest chunk only
         latestAudioChunkId += 1;
+        pushSseEvent("audio", { chunkId: latestAudioChunkId, data: latestAudioChunk });
 
         console.log({latestAudioChunkId})
 
@@ -143,6 +146,44 @@ app.post("/broadcast/audio", (req, res) => {
         res.status(500).json({ success: false, error: 'server error' });
     }
 });
+
+/* ------------------------
+   SSE STREAM FOR JEMAAH
+-------------------------*/
+const clients = [];
+
+app.get("/broadcast/stream", (req, res) => {
+    // Set SSE headers
+    res.set({
+        "Content-Type": "text/event-stream",
+        "Cache-Control": "no-cache",
+        Connection: "keep-alive",
+    });
+    res.flushHeaders();
+
+    // Add client to connection list
+    const client = { id: Date.now(), res };
+    clients.push(client);
+
+    console.log("SSE client connected:", client.id);
+
+    // Initial state
+    res.write(`event: status\ndata: ${JSON.stringify({ broadcasting })}\n\n`);
+
+    // Remove client on disconnect
+    req.on("close", () => {
+        const idx = clients.indexOf(client);
+        if (idx !== -1) clients.splice(idx, 1);
+        console.log("SSE client disconnected:", client.id);
+    });
+});
+
+// Helper to push events
+function pushSseEvent(event, payload) {
+    clients.forEach(c => {
+        c.res.write(`event: ${event}\ndata: ${JSON.stringify(payload)}\n\n`);
+    });
+}
 
 /* ------------------------
    GET AUDIO CHUNK (JEMAAH)
