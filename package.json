@@ -5,12 +5,13 @@
   "main": "index.js",
   "type": "module",
   "scripts": {
-    "start": "npx pm2 start src/index.cjs --name manasik-server"
+    "start": "pm2 start src/index.cjs --name manasik-server"
   },
   "author": "",
   "license": "ISC",
   "dependencies": {
     "cors": "^2.8.5",
-    "express": "^4.21.2"
+    "express": "^4.21.2",
+    "pm2": "^6.0.13"
   }
 }
