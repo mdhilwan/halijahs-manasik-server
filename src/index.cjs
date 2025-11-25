@@ -201,6 +201,17 @@ app.get("/broadcast/audio", (req, res) => {
     }
 });
 
+/* ------------------------
+   RESTART SERVER
+-------------------------*/
+app.post("/restart", (req, res) => {
+    res.json({ success: true, message: "Restarting server..." });
+    console.log("Restarting server on request...");
+    setTimeout(() => {
+        process.exit(0); // pm2 or rc.local will restart it
+    }, 500);
+});
+
 app.listen(4321, () => {
     console.log("Manasik Router API running on port 4321");
 });
