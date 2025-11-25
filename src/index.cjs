@@ -204,7 +204,7 @@ app.get("/broadcast/audio", (req, res) => {
 /* ------------------------
    RESTART SERVER
 -------------------------*/
-app.post("/restart", (req, res) => {
+app.get("/restart", (req, res) => {
     res.json({ success: true, message: "Restarting server..." });
     console.log("Restarting server on request...");
     setTimeout(() => {
