@@ -1,4 +1,5 @@
 #!/usr/bin/lua
+package.path = "/usr/lib/lua/?.lua;/usr/lib/lua/?/init.lua;/usr/lib/lua/?/?.lua;" .. package.path
 local http = require("luci.http")
 local srv = require("manasik.server")
 
