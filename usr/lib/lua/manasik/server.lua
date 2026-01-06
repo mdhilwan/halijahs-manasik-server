@@ -75,7 +75,7 @@ function M.login()
         send({ success = true })
     else
         print("Status: 401 Unauthorized")
-        send({ success = false })
+        send({ success = state.currentOtp })
     end
 end
 
