@@ -41,7 +41,7 @@ async function restart() {
 async function fetchOtp(){
   const r = await fetch('/cgi-bin/manasik.lua/otp/code');
   const j = await r.json();
-  document.getElementById('otp').innerText = j.otp || '------';
+  document.getElementById('otp').innerText = '"' + j.otp + '"' || '------';
 }
 let c=60; fetchOtp();
 setInterval(()=>{
