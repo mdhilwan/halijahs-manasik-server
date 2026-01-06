@@ -3,6 +3,9 @@ package.path = "/usr/lib/lua/?.lua;/usr/lib/lua/?/init.lua;/usr/lib/lua/?/?.lua;
 local http = require("luci.http")
 local srv = require("manasik.server")
 
+local cgi = require "luci.sgi.cgi"
+local env = cgi.run()
+
 local p = http.getenv("PATH_INFO")
 
 if p == "/health" then srv.health()
