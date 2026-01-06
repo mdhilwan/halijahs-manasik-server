@@ -56,6 +56,7 @@ end
 
 function M.otp_code()
     cors()
+    math.randomseed(os.time())
     state.currentOtp = tostring(math.random(100000, 999999))
     send({ otp = state.currentOtp })
 end
