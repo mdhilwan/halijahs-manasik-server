@@ -1,6 +1,5 @@
 #!/usr/bin/lua
 package.path = "/usr/lib/lua/?.lua;/usr/lib/lua/?/init.lua;/usr/lib/lua/?/?.lua;" .. package.path
-local http = require("luci.http")
 local srv = require("manasik.server")
 
 local p = os.getenv("PATH_INFO")
@@ -16,6 +15,8 @@ elseif p == "/broadcast/start" then srv.broadcast_start()
 elseif p == "/broadcast/stop" then srv.broadcast_stop()
 elseif p == "/restart" then srv.restart()
 else
-    http.status(404)
-    http.write("Not found")
+    print("Status: 404 Not Found")
+    print("Content-Type: text/plain")
+    print("")
+    print("Not found")
 end

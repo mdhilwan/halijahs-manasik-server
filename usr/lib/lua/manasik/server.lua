@@ -5,14 +5,15 @@ local state = require("manasik.state")
 local M = {}
 
 local function cors()
-    http.header("Access-Control-Allow-Origin", "*")
-    http.header("Access-Control-Allow-Methods", "GET, POST, OPTIONS")
-    http.header("Access-Control-Allow-Headers", "Content-Type")
+    print("Access-Control-Allow-Origin: *")
+    print("Access-Control-Allow-Methods: GET, POST, OPTIONS")
+    print("Access-Control-Allow-Headers: Content-Type")
 end
 
 local function send(tbl)
-    http.header("Content-Type", "application/json")
-    http.write(json.stringify(tbl))
+    print("Content-Type: application/json")
+    print("")
+    print(json.stringify(tbl))
 end
 
 function M.health()
@@ -22,8 +23,9 @@ end
 
 function M.otp()
     cors()
-    http.header("Content-Type", "text/html")
-    http.write([[
+    print("Content-Type: text/html")
+    print("")
+    print([[
 <html>
 <head><meta name="viewport" content="width=device-width, initial-scale=1"/></head>
 <body style="font-family:sans-serif;text-align:center;padding:20px">
@@ -60,14 +62,17 @@ end
 
 function M.login()
     cors()
-    local body = json.parse(http.content())
+    local content_length = tonumber(os.getenv("CONTENT_LENGTH")) or 0
+    local body_raw = io.read(content_length)
+    local body = json.parse(body_raw)
+
     if body and body.otp == state.currentOtp then
         state.isLoggedIn = true
         state.broadcasting = "idle"
         state.currentOtp = nil
         send({ success = true })
     else
-        http.status(401)
+        print("Status: 401 Unauthorized")
         send({ success = false })
     end
 end
