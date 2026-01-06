@@ -62,11 +62,26 @@ function M.otp_code()
     send({ otp = state.currentOtp })
 end
 
+local function log(msg)
+    local safe_msg = tostring(msg):gsub('"', '\\"')
+    os.execute(string.format('logger -t "MANASIK_DEBUG" "%s"', safe_msg))
+end
+
 function M.login()
     cors()
     local content_length = tonumber(os.getenv("CONTENT_LENGTH")) or 0
+    log("Login attempt. Content-Length: " .. content_length)
+
     local body_raw = io.read(content_length)
+    log("Raw Body: " .. (body_raw or "nil"))
+
     local body = json.parse(body_raw)
+
+    if body then
+        log("Parsed OTP: " .. tostring(body.otp) .. " | Expected: " .. tostring(state.currentOtp))
+    else
+        log("JSON Parsing failed")
+    end
 
     if body and body.otp == state.currentOtp then
         state.isLoggedIn = true
@@ -75,7 +90,7 @@ function M.login()
         send({ success = true })
     else
         print("Status: 401 Unauthorized")
-        send({ success = state.currentOtp })
+        send({ success = false })
     end
 end
 
