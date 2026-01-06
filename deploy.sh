@@ -21,9 +21,9 @@ echo "Restarting uhttpd..."
 
 # 5. Health Check
 echo "Running health check..."
-RESPONSE=$(curl -s 127.0.0.1)
+RESPONSE=$(curl -s 127.0.0.1/cgi-bin/manasik.lua/health)
 
-if echo "$RESPONSE" | grep -q '"OK": true' || echo "$RESPONSE" | grep -q '"ok": true'; then
+if echo "$RESPONSE" | grep -q '{"OK":true}' || echo "$RESPONSE" | grep -q '{"ok":true}'; then
     echo "Deployment successful: $RESPONSE"
 else
     echo "Deployment FAILED: $RESPONSE"
