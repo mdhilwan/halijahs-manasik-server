@@ -1,6 +1,5 @@
 local M = {}
 
-M.currentOtp = nil
 M.isLoggedIn = false
 M.broadcasting = false
 M.latestAudioChunk = nil

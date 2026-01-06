@@ -1,6 +1,7 @@
 local json = require("luci.jsonc")
 local http = require("luci.http")
 local state = require("manasik.state")
+local OTP_FILE = "/tmp/manasik_otp"
 
 local M = {}
 
@@ -58,8 +59,9 @@ function M.otp_code()
     cors()
     math.randomseed(os.time())
     math.random(); math.random(); math.random() -- pop afew times to improve randomness
-    state.currentOtp = tostring(math.random(100000, 999999))
-    send({ otp = state.currentOtp })
+    local code = tostring(math.random(100000, 999999))
+    M.save_otp(code)
+    send({ otp = code })
 end
 
 local function log(msg)
@@ -70,23 +72,22 @@ end
 function M.login()
     cors()
     local content_length = tonumber(os.getenv("CONTENT_LENGTH")) or 0
-    log("Login attempt. Content-Length: " .. content_length)
-
     local body_raw = io.read(content_length)
-    log("Raw Body: " .. (body_raw or "nil"))
+    local expectedOtp = M.get_otp()
+    log("expectedOtp: " .. (expectedOtp or "nil"))
 
     local body = json.parse(body_raw)
 
     if body then
-        log("Parsed OTP: " .. tostring(body.otp) .. " | Expected: " .. tostring(state.currentOtp))
+        log("Parsed OTP: " .. tostring(body.otp) .. " | Expected: " .. tostring(expectedOtp))
     else
         log("JSON Parsing failed")
     end
 
-    if body and body.otp == state.currentOtp then
+    if body and expectedOtp and body.otp == expectedOtp then
+        os.remove("/tmp/manasik_otp")
         state.isLoggedIn = true
         state.broadcasting = "idle"
-        state.currentOtp = nil
         send({ success = true })
     else
         print("Status: 401 Unauthorized")
@@ -115,6 +116,24 @@ function M.restart()
     cors()
     send({ success = true })
     os.execute("/etc/init.d/uhttpd restart &")
+end
+
+function M.save_otp(code)
+    local f = io.open(OTP_FILE, "w")
+    if f then
+        f:write(code)
+        f:close()
+    end
+end
+
+function M.get_otp()
+    local f = io.open(OTP_FILE, "r")
+    if f then
+        local code = f:read("*all")
+        f:close()
+        return code
+    end
+    return nil
 end
 
 return M
