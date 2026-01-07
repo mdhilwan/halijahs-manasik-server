@@ -2,6 +2,7 @@ local json = require("luci.jsonc")
 local http = require("luci.http")
 local state = require("manasik.state")
 local OTP_FILE = "/tmp/manasik_otp"
+local BROADCAST_STATE_FILE = "/tmp/broadcast_state"
 
 local M = {}
 
@@ -87,7 +88,7 @@ function M.login()
     if body and expectedOtp and body.otp == expectedOtp then
         os.remove("/tmp/manasik_otp")
         state.isLoggedIn = true
-        state.broadcasting = "idle"
+        M.save_broadcast_state("idle")
         send({ success = true })
     else
         print("Status: 401 Unauthorized")
@@ -97,18 +98,19 @@ end
 
 function M.broadcast_current()
     cors()
-    send({ broadcasting = state.broadcasting })
+    local current = M.get_broadcast_state()
+    send({ broadcasting = current })
 end
 
 function M.broadcast_start()
     cors()
-    state.broadcasting = "live"
+    M.save_broadcast_state("live")
     send({ broadcasting = "live" })
 end
 
 function M.broadcast_stop()
     cors()
-    state.broadcasting = "idle"
+    M.save_broadcast_state("idle")
     send({ broadcasting = "idle" })
 end
 
@@ -128,6 +130,24 @@ end
 
 function M.get_otp()
     local f = io.open(OTP_FILE, "r")
+    if f then
+        local code = f:read("*all")
+        f:close()
+        return code
+    end
+    return nil
+end
+
+function M.save_broadcast_state(code)
+    local f = io.open(BROADCAST_STATE_FILE, "w")
+    if f then
+        f:write(code)
+        f:close()
+    end
+end
+
+function M.get_broadcast_state()
+    local f = io.open(BROADCAST_STATE_FILE, "r")
     if f then
         local code = f:read("*all")
         f:close()
