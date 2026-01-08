@@ -98,18 +98,21 @@ end
 
 function M.broadcast_current()
     cors()
+    log("broadcast_current")
     local current = M.get_broadcast_state()
     send({ broadcasting = current })
 end
 
 function M.broadcast_start()
     cors()
+    log("broadcast_start")
     M.save_broadcast_state("live")
     send({ broadcasting = "live" })
 end
 
 function M.broadcast_stop()
     cors()
+    log("broadcast_stop")
     M.save_broadcast_state("idle")
     send({ broadcasting = "idle" })
 end
