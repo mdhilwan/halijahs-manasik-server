@@ -98,8 +98,8 @@ end
 
 function M.broadcast_current()
     cors()
-    log("broadcast_current")
     local current = M.get_broadcast_state()
+    log("broadcast_current ::: " + current)
     send({ broadcasting = current })
 end
 
